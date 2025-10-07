@@ -3,12 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\BookController;
-use App\Http\Controllers\LoanController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\BookController;
+use App\Http\Controllers\LoanController;
 
 // =====================
 // AUTH ROUTES
@@ -31,14 +31,6 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // =====================
-// LOANS
-// =====================
-Route::middleware(['auth'])->group(function () {
-    Route::resource('loans', LoanController::class)->only(['index', 'create', 'store']);
-    Route::get('loans/history', [LoanController::class, 'history'])->name('loans.history'); // ✅ riwayat siswa
-});
-
-// =====================
 // USERS MANAGEMENT
 // =====================
 Route::middleware(['auth'])->group(function () {
@@ -53,13 +45,6 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // =====================
-// BOOKS MANAGEMENT
-// =====================
-Route::middleware(['auth'])->group(function () {
-    Route::resource('books', BookController::class);
-});
-
-// =====================
 // SETTINGS
 // =====================
 Route::middleware(['auth'])->group(function () {
@@ -67,8 +52,22 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // =====================
+// BOOKS MANAGEMENT (Admin)
+// =====================
+Route::middleware(['auth'])->group(function () {
+    Route::resource('books', BookController::class);
+    Route::resource('loans', LoanController::class)->except(['show']);
+    Route::get('loans/history', [LoanController::class, 'history'])->name('loans.history');
+    Route::post('loans/{loanId}/return', [LoanController::class, 'returnBook'])->name('loans.return');
+});
+
+// =====================
 // UNIVERSAL DASHBOARD REDIRECT
 // =====================
+Route::get('/', function () {
+    return redirect()->route('dashboard');
+});
+
 Route::get('/dashboard', function () {
     if (!Auth::check()) {
         return redirect()->route('login');
@@ -78,7 +77,7 @@ Route::get('/dashboard', function () {
 
     return match ($role) {
         'admin' => redirect()->route('admin.dashboard'),
-        'guru'  => redirect()->route('guru.dashboard'),
+        'guru' => redirect()->route('guru.dashboard'),
         default => redirect()->route('siswa.dashboard'),
     };
 })->name('dashboard');

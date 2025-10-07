@@ -3,7 +3,10 @@
 @section('content')
 <h2 class="text-xl font-bold mb-4">Edit Buku</h2>
 
-<form action="{{ route('books.update', $book->id) }}" method="POST" class="max-w-lg">
+<form action="{{ route('books.update', $book->id) }}"
+      method="POST"
+      enctype="multipart/form-data"
+      class="max-w-lg">
     @csrf
     @method('PUT')
 
@@ -24,9 +27,41 @@
     </div>
 
     <div class="mb-3">
+        <label class="block mb-1">Kategori</label>
+        <input type="text" name="category" value="{{ old('category', $book->category) }}" class="w-full border p-2 rounded">
+        @error('category')
+            <div class="text-red-600 text-sm">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <div class="mb-3">
+        <label class="block mb-1">Tahun</label>
+        <input type="number" name="year" value="{{ old('year', $book->year) }}" class="w-full border p-2 rounded">
+        @error('year')
+            <div class="text-red-600 text-sm">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <div class="mb-3">
         <label class="block mb-1">Stok</label>
         <input type="number" name="stock" value="{{ old('stock', $book->stock) }}" class="w-full border p-2 rounded">
         @error('stock')
+            <div class="text-red-600 text-sm">{{ $message }}</div>
+        @enderror
+    </div>
+
+    {{-- ✅ Input cover baru --}}
+    <div class="mb-3">
+        <label class="block mb-1">Cover Buku (opsional)</label>
+        @if($book->cover)
+            <div class="mb-2">
+                <img src="{{ asset('storage/' . $book->cover) }}"
+                     alt="Cover Lama"
+                     class="h-32 w-auto rounded shadow">
+            </div>
+        @endif
+        <input type="file" name="cover" class="w-full border p-2 rounded">
+        @error('cover')
             <div class="text-red-600 text-sm">{{ $message }}</div>
         @enderror
     </div>

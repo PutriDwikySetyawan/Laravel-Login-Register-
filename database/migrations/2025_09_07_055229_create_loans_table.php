@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->date('returned_at')->nullable();
             $table->string('status')->default('pinjam'); // pinjam/kembali
             $table->timestamps();
-    });
+        });
 }
 
 

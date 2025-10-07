@@ -29,21 +29,26 @@ class BookController extends Controller
      * Simpan buku baru.
      */
     public function store(Request $request)
-    {
-        $data = $request->validate([
-            'title'     => ['required', 'string'],
-            'author'    => ['nullable', 'string'],
-            'publisher' => ['nullable', 'string'],
-            'stock'     => ['required', 'integer', 'min:0'],
-            'isbn'      => ['nullable', 'string'],
-        ]);
+{
+    $validated = $request->validate([
+        'title'   => 'required|string|max:255',
+        'author'  => 'required|string|max:255',
+        'category'=> 'required|string|max:255',
+        'year'    => 'required|integer',
+        'stock'   => 'required|integer',
+        'cover'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // validasi cover
+    ]);
 
-        Book::create($data);
-
-        return redirect()
-            ->route('books.index')
-            ->with('success', 'Buku berhasil ditambahkan.');
+    // Simpan file cover jika ada
+    if ($request->hasFile('cover')) {
+        $path = $request->file('cover')->store('covers', 'public'); 
+        $validated['cover'] = $path;  // masukkan path ke array validated
     }
+
+    Book::create($validated);
+
+    return redirect()->route('books.index')->with('success', 'Buku berhasil ditambahkan!');
+}
 
     /**
      * Form edit buku.
@@ -57,18 +62,26 @@ class BookController extends Controller
      * Update data buku.
      */
     public function update(Request $request, Book $book)
-    {
-        $data = $request->validate([
-            'title' => ['required', 'string'],
-            'stock' => ['required', 'integer', 'min:0'],
-        ]);
+{
+    $validated = $request->validate([
+        'title'   => 'required|string|max:255',
+        'author'  => 'required|string|max:255',
+        'category'=> 'required|string|max:255',
+        'year'    => 'required|integer',
+        'stock'   => 'required|integer',
+        'cover'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
-        $book->update($data);
-
-        return redirect()
-            ->route('books.index')
-            ->with('success', 'Buku berhasil diperbarui.');
+    if ($request->hasFile('cover')) {
+        $path = $request->file('cover')->store('covers', 'public');
+        $validated['cover'] = $path;
     }
+
+    $book->update($validated);
+
+    return redirect()->route('books.index')->with('success', 'Buku berhasil diupdate!');
+}
+
 
     /**
      * Hapus buku.

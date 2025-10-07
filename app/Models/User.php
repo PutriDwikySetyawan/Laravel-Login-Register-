@@ -47,35 +47,35 @@ class User extends Authenticatable
         ];
     }
 
-    /** 
-     * Get the borrowings for the user.
+    /**
+     * Check if user is admin
      */
-    public function loans()
+    public function isAdmin()
     {
-        return $this->hasMany(Loan::class);
+        return $this->role === 'admin';
     }
 
     /**
-     * Check if user is perpustakawan
+     * Check if user is instructor
      */
-    public function isPerpustakawan()
-    {
-        return $this->role === 'perpustakawan';
-    }
-
-    /**
-     * Check if user is guru
-     */
-    public function isGuru()
+    public function isInstructor()
     {
         return $this->role === 'guru';
     }
 
     /**
-     * Check if user is siswa
+     * Check if user is student
      */
-    public function isSiswa()
+    public function isStudent()
     {
         return $this->role === 'siswa';
+    }
+
+    /**
+     * Relationship: User has many loans
+     */
+    public function loans()
+    {
+        return $this->hasMany(Loan::class);
     }
 }

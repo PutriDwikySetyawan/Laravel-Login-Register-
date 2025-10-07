@@ -34,9 +34,7 @@ class DashboardController extends Controller
      */
     public function guru()
     {
-        // ambil semua buku dengan stok > 0
         $books = Book::where('stock', '>', 0)->get();
-
         return view('dashboard.guru', compact('books'));
     }
 
@@ -45,9 +43,7 @@ class DashboardController extends Controller
      */
     public function siswa()
     {
-        // ambil semua buku dengan stok > 0
         $books = Book::where('stock', '>', 0)->get();
-
         return view('dashboard.siswa', compact('books'));
     }
 }

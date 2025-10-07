@@ -1,96 +1,44 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Guru</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+@extends('layouts.app')
 
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Perpustakaan</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <span class="navbar-text me-3 text-white">
-                            👤 {{ Auth::user()->name }}
-                        </span>
-                    </li>
-                    <li class="nav-item">
-                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                            @csrf
-                            <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
+@section('content')
+<div class="bg-white p-6 rounded-lg shadow">
+    <h1 class="text-2xl font-semibold mb-6">📚 Dashboard Guru</h1>
+
+    <p class="mb-6">Selamat datang, <strong>{{ Auth::user()->name }}</strong> 👋</p>
+
+    <!-- MENU -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="bg-blue-50 p-6 rounded shadow text-center">
+            <h3 class="text-lg font-semibold mb-2 text-blue-800">📚 Katalog Buku</h3>
+            <p class="text-gray-600 mb-4">Lihat semua koleksi buku di perpustakaan.</p>
+            <a href="{{ route('books.index') }}" class="inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Lihat Katalog</a>
         </div>
-    </nav>
 
-    <!-- CONTENT -->
-    <div class="container mt-5">
-        <div class="card shadow-lg p-4">
-            <h1 class="mb-4">📚 Dashboard Guru</h1>
+        <div class="bg-green-50 p-6 rounded shadow text-center">
+            <h3 class="text-lg font-semibold mb-2 text-green-800">📝 Form Peminjaman</h3>
+            <p class="text-gray-600 mb-4">Ajukan peminjaman buku melalui form peminjaman.</p>
+            <a href="{{ route('loans.create') }}" class="inline-block px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Ajukan Peminjaman</a>
+        </div>
 
-            <p>Selamat datang, <strong>{{ Auth::user()->name }}</strong> 👋</p>
-
-            <!-- MENU -->
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <div class="card text-center shadow-sm mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Riwayat Peminjaman</h5>
-                            <p class="text-muted">Lihat daftar buku yang pernah Anda pinjam.</p>
-                            <a href="{{ route('loans.history') }}" class="btn btn-warning">Lihat Riwayat</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="card text-center shadow-sm mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Laporan</h5>
-                            <p class="text-muted">Akses laporan peminjaman dan aktivitas.</p>
-                            <a href="{{ route('reports.index') }}" class="btn btn-success">Lihat Laporan</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- FORM PEMINJAMAN -->
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Form Peminjaman Buku</h5>
-                    <form action="{{ route('loans.store') }}" method="POST">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="book_id" class="form-label">Pilih Buku</label>
-                            <select class="form-select" name="book_id" id="book_id" required>
-                                <option value="">-- Pilih Buku --</option>
-                                @foreach($books as $book)
-                                    <option value="{{ $book->id }}">{{ $book->title }} (stok: {{ $book->stock }})</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="loaned_at" class="form-label">Tanggal Pinjam</label>
-                            <input type="date" name="loaned_at" id="loaned_at" class="form-control" required>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">Pinjam Buku</button>
-                    </form>
-                </div>
-            </div>
-
+        <div class="bg-yellow-50 p-6 rounded shadow text-center">
+            <h3 class="text-lg font-semibold mb-2 text-yellow-800">📖 Riwayat Peminjaman</h3>
+            <p class="text-gray-600 mb-4">Lihat daftar buku yang pernah Anda pinjam.</p>
+            <a href="{{ route('loans.history') }}" class="inline-block px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">Lihat Riwayat</a>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-purple-50 p-6 rounded shadow text-center">
+            <h3 class="text-lg font-semibold mb-2 text-purple-800">📊 Laporan</h3>
+            <p class="text-gray-600 mb-4">Akses laporan peminjaman dan aktivitas.</p>
+            <a href="{{ route('reports.index') }}" class="inline-block px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600">Lihat Laporan</a>
+        </div>
+
+        <div class="bg-gray-50 p-6 rounded shadow text-center">
+            <h3 class="text-lg font-semibold mb-2 text-gray-800">⚙️ Pengaturan</h3>
+            <p class="text-gray-600 mb-4">Kelola pengaturan sistem perpustakaan.</p>
+            <a href="{{ route('settings.index') }}" class="inline-block px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Buka Pengaturan</a>
+        </div>
+    </div>
+</div>
+@endsection

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Loan extends Model
 {
-    protected $fillable = ['user_id','book_id','loaned_at','returned_at','status'];
+    protected $fillable = ['user_id','book_id','loaned_at','returned_at','actual_returned_at','status'];
 
     public function user(): BelongsTo
     {

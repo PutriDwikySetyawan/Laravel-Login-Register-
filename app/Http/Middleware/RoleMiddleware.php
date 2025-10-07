@@ -14,11 +14,10 @@ class RoleMiddleware
             return redirect()->route('login');
         }
 
-       if (!in_array(Auth::user()->role, explode('|', $role))) {
+        if (!in_array(Auth::user()->role, explode('|', $role))) {
             abort(403, 'Unauthorized.');
         }
 
-        
         return $next($request);
     }
 }

@@ -15,7 +15,7 @@ class LoanController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        if ($user && $user->role === 'perpustakawan') {
+        if ($user && ($user->role === 'admin' || $user->role === 'guru')) {
             $loans = Loan::with(['user', 'book'])->latest()->paginate(15);
         } else {
             $loans = $user->loans()->with('book')->latest()->paginate(15);
@@ -35,6 +35,7 @@ class LoanController extends Controller
         $request->validate([
             'book_id'    => 'required|exists:books,id',
             'loan_date'  => 'nullable|date', // tambahan validasi tanggal
+            'return_date' => 'required|date|after:loan_date',
             'user_id'    => 'nullable|exists:users,id'
         ]);
 
@@ -52,6 +53,7 @@ class LoanController extends Controller
             'user_id'   => $loanUserId,
             'book_id'   => $book->id,
             'loaned_at' => $request->loan_date ?? now()->toDateString(),
+            'returned_at' => $request->return_date,
             'status'    => 'pinjam'
         ]);
 
@@ -71,5 +73,33 @@ class LoanController extends Controller
         $loans = $user->loans()->with('book')->latest()->paginate(10);
 
         return view('loans.history', compact('loans'));
+    }
+
+    // ✅ Tambahan: untuk mengembalikan buku
+    public function returnBook($loanId)
+    {
+        $loan = Loan::findOrFail($loanId);
+
+        // Pastikan hanya admin, guru, atau siswa yang meminjam buku tersebut yang bisa mengembalikan
+        $user = Auth::user();
+        if (!in_array($user->role, ['admin', 'guru']) && !($user->role === 'siswa' && $loan->user_id === $user->id)) {
+            abort(403, 'Unauthorized');
+        }
+
+        // Pastikan status masih pinjam
+        if ($loan->status !== 'pinjam') {
+            return back()->withErrors(['loan' => 'Buku sudah dikembalikan sebelumnya.']);
+        }
+
+        // Update status dan tanggal pengembalian aktual
+        $loan->update([
+            'status' => 'kembali',
+            'actual_returned_at' => now()->toDateString() // Tanggal pengembalian aktual
+        ]);
+
+        // Tambahkan stok buku kembali
+        $loan->book->increment('stock');
+
+        return back()->with('success', 'buku sudah di kembalikan');
     }
 }
