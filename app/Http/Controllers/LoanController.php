@@ -65,12 +65,16 @@ class LoanController extends Controller
             ->with('success', 'Peminjaman dicatat berhasil.');
     }
 
-    // ✅ Tambahan: untuk menampilkan riwayat peminjaman siswa
+    // ✅ Tambahan: untuk menampilkan riwayat peminjaman siswa dan guru
     public function history()
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
-        $loans = $user->loans()->with('book')->latest()->paginate(10);
+        if ($user && ($user->role === 'admin' || $user->role === 'guru')) {
+            $loans = Loan::with(['user', 'book'])->latest()->paginate(15);
+        } else {
+            $loans = $user->loans()->with('book')->latest()->paginate(10);
+        }
 
         return view('loans.history', compact('loans'));
     }
@@ -91,10 +95,10 @@ class LoanController extends Controller
             return back()->withErrors(['loan' => 'Buku sudah dikembalikan sebelumnya.']);
         }
 
-        // Update status dan tanggal pengembalian aktual
+        // Update status
         $loan->update([
             'status' => 'kembali',
-            'actual_returned_at' => now()->toDateString() // Tanggal pengembalian aktual
+            'actual_returned_at' => now()->toDateString()
         ]);
 
         // Tambahkan stok buku kembali

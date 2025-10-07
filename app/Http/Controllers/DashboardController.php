@@ -44,6 +44,8 @@ class DashboardController extends Controller
     public function siswa()
     {
         $books = Book::where('stock', '>', 0)->get();
-        return view('dashboard.siswa', compact('books'));
+        $user = Auth::user();
+        $currentLoans = \App\Models\Loan::where('user_id', $user->id)->where('status', 'pinjam')->with('book')->get();
+        return view('dashboard.siswa', compact('books', 'currentLoans'));
     }
 }

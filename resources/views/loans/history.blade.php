@@ -2,6 +2,11 @@
 
 @section('content')
 <div class="max-w-4xl mx-auto p-6 bg-white rounded shadow">
+    @if(session('success'))
+        <div class="mb-4 p-4 bg-green-100 text-green-800 rounded">
+            {{ session('success') }}
+        </div>
+    @endif
     <h1 class="text-2xl font-semibold mb-6">Riwayat Peminjaman</h1>
     @if($loans->count())
         <table class="w-full border-collapse border border-gray-300">
@@ -40,7 +45,7 @@
                         }
                     @endphp
                     <tr>
-                        <td class="border border-gray-300 px-4 py-2">{{ $loan->book->title }}</td>
+                        <td class="border border-gray-300 px-4 py-2">{{ $loan->book ? $loan->book->title : 'Buku tidak ditemukan' }}</td>
                         <td class="border border-gray-300 px-4 py-2">{{ $loan->loaned_at }}</td>
                         <td class="border border-gray-300 px-4 py-2">
                             @if($loan->status === 'kembali' && $loan->actual_returned_at)

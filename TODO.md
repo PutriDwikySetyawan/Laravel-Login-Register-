@@ -8,3 +8,4 @@
 - [x] Build assets to apply CSS changes.
 - [x] Fix login/register and dashboard styling to match previous good version.
 - [x] Add return date field to loan creation form and update fine calculation (5,000 if overdue by 1 week past return date).
+- [x] Add return book button directly in student dashboard.
